@@ -1,15 +1,24 @@
 package com.example.SchoolProject
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.View.OnTouchListener
+import android.widget.LinearLayout
+import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.SchoolProject.labeldetector.LabelDetectorProcessor
@@ -73,6 +82,8 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
                     Log.i("CUSTOM","needUpdateGraphicOverlayImageSourceInfo")
                     val rotationDegrees = image.imageInfo.rotationDegrees
                     if (rotationDegrees == 0 || rotationDegrees == 180) {
+
+                        //onButtonShowPopupWindowClick()
                         graphicOverlay!!.setImageSourceInfo(image.width, image.height, false)
                         Log.d("CUSTOM", "width : " + image.width + ", height : " + image.height)
                     } else {
@@ -172,6 +183,28 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
                     Toast.LENGTH_SHORT).show()
                 finish()
             }
+        }
+    }
+
+    fun onButtonShowPopupWindowClick(){
+        val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        var popupview = inflater.inflate(R.layout.activity_captured, null)
+
+        // create the popup window
+        val width = ConstraintLayout.LayoutParams.WRAP_CONTENT
+        val height = ConstraintLayout.LayoutParams.WRAP_CONTENT
+        val focusable = true // lets taps outside the popup also dismiss it
+        val popupWindow = PopupWindow(popupview, width, height)
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(ConstraintLayout(this), Gravity.CENTER, 0, 0);
+
+        // dismiss the popup window when touched
+
+        // dismiss the popup window when touched
+        popupview.setOnClickListener() {
+            popupWindow.dismiss()
         }
     }
 }

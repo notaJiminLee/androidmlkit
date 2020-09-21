@@ -115,6 +115,13 @@ class analyzer : ImageAnalysis.Analyzer {
 
             val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
 
+            //TODO("이거 중요")
+//            for(image in dir){
+//                labeler.process(image).addOnSuccessListener {
+//
+//                }
+//            }
+
             labeler.process(inputimage)
                 .addOnSuccessListener {  labels ->
 
@@ -122,14 +129,14 @@ class analyzer : ImageAnalysis.Analyzer {
                         it.confidence
                     }
 
-                    for (label in labels) {
-                        val text = labels[0].text
-                        val confidence = labels[0].confidence
-                        val index = labels[0].index
-                        Toast.makeText(mainActivity, "Label is : " + labels.size, Toast.LENGTH_SHORT).show()
-                        Log.d("CUSTOM", "Labels : " + labels[0])
-                        Log.d("CUSTOM", "Label.text : " + text + ", Label.confidence : " + confidence + ", Label.Index : " + index)
-                    }
+                    val max = labels[0]
+                    val text = max.text
+                    val confidence = max.confidence
+                    val index = labels[0].index
+                    Toast.makeText(mainActivity, "Label is : " + labels.size, Toast.LENGTH_SHORT).show()
+                    Log.d("CUSTOM", "Labels : " + labels[0])
+                    Log.d("CUSTOM", "Label.text : " + text + ", Label.confidence : " + confidence + ", Label.Index : " + index)
+
                 }
                 .addOnFailureListener { e ->
                     // Task failed with an exception
