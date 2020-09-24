@@ -9,6 +9,7 @@ import android.view.Surface
 import android.widget.Toast
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import com.example.SchoolProject.db.LabelDB
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
@@ -121,29 +122,7 @@ class analyzer : ImageAnalysis.Analyzer {
 //
 //                }
 //            }
-
-            labeler.process(inputimage)
-                .addOnSuccessListener {  labels ->
-
-                    labels.sortBy {
-                        it.confidence
-                    }
-
-                    val max = labels[0]
-                    val text = max.text
-                    val confidence = max.confidence
-                    val index = labels[0].index
-                    Toast.makeText(mainActivity, "Label is : " + labels.size, Toast.LENGTH_SHORT).show()
-                    Log.d("CUSTOM", "Labels : " + labels[0])
-                    Log.d("CUSTOM", "Label.text : " + text + ", Label.confidence : " + confidence + ", Label.Index : " + index)
-
-                }
-                .addOnFailureListener { e ->
-                    // Task failed with an exception
-                    // ...
-                }
-
-
+            
 
         }catch(e: IllegalStateException){
             Log.e("CUSTOM", "IllegalStateException : " + e)

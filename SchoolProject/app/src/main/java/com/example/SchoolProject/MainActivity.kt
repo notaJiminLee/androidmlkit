@@ -2,16 +2,15 @@ package com.example.SchoolProject
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.View.OnTouchListener
-import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -21,8 +20,11 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.SchoolProject.db.BaseDB
+import com.example.SchoolProject.db.LabelDB
 import com.example.SchoolProject.labeldetector.LabelDetectorProcessor
 import com.google.android.gms.common.annotation.KeepName
+import com.google.mlkit.vision.objects.DetectedObject
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.util.concurrent.ExecutorService
@@ -40,6 +42,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
     private var graphicOverlay: GraphicOverlay? = null
     private var needUpdateGraphicOverlayImageSourceInfo = false
     private var lensFacing = CameraSelector.LENS_FACING_BACK
+    private var detectedEntry : LabelDB.Entry? = null
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +56,9 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
+        // 갤러리 버튼 ClickListener 설정
+        gallery_button.setOnClickListener{ goGallery() }
+
         // 촬영 버튼 ClickListener 설정
         camera_capture_button.setOnClickListener { takePhoto() }
         graphicOverlay = findViewById(R.id.graphic_overlay)
@@ -62,10 +68,31 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         imageProcessor = LabelDetectorProcessor(this)
     }
 
+    private fun goGallery() {
+        // DB 생성 or DB 열기
+        val labeldb : LabelDB = LabelDB(this);
+        var database = labeldb.readableDatabase
+        labeldb.onOpen(database)
+
+        // 값 읽기
+        var result = labeldb.getAll()
+        Log.d("CUSTOM_DB/MainActivity", "Database Read Result : " + result)
+
+        var intent = Intent(this, GalleryActivity::class.java)
+        startActivity(intent)
+        finish()
+
+        // 값 넣기
+//        var entry = LabelDB.Entry(
+//            label = "testlabel"
+//        )
+//        labeldb.addEntry(entry)
+    }
+
     private fun takePhoto() {
         needUpdateGraphicOverlayImageSourceInfo = true
 
-        Log.d("CUSTOM", "Function 'takePhoto' started.")
+        Log.d("CUSTOM/MainActivity", "Function 'takePhoto' started.")
         // use case(?) 가져오고 null이면 종료(이미지 캡처를 설정하기 전에 사진 버튼을 탭하면 null)
         val imageCapture = imageCapture ?: return
         //var ar: analyzer? = analyzer(this)  // 이미지 받아와서 처리하고 Inference 해주는 class. 여기에 이미지 전달해주기 위해서 변수에 저장
@@ -76,19 +103,19 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             override fun onCaptureSuccess(image: ImageProxy) {
                 //Log.d("CUSTOM", "Function 'takePicture' started.")
                 //ar?.analyze(image)  // analyzer 클래스의 analyze 함수에 이미지 전달
-                Log.i("CUSTOM","Using Image Label Detector Processor")
+                Log.i("CUSTOM/MainActivity","Using Image Label Detector Processor")
 
                 if (needUpdateGraphicOverlayImageSourceInfo) {
-                    Log.i("CUSTOM","needUpdateGraphicOverlayImageSourceInfo")
+                    Log.i("CUSTOM/MainActivity","needUpdateGraphicOverlayImageSourceInfo")
                     val rotationDegrees = image.imageInfo.rotationDegrees
                     if (rotationDegrees == 0 || rotationDegrees == 180) {
 
                         //onButtonShowPopupWindowClick()
                         graphicOverlay!!.setImageSourceInfo(image.width, image.height, false)
-                        Log.d("CUSTOM", "width : " + image.width + ", height : " + image.height)
+                        Log.d("CUSTOM/MainActivity", "width : " + image.width + ", height : " + image.height)
                     } else {
                         graphicOverlay!!.setImageSourceInfo(image.height, image.width, false)
-                        Log.d("CUSTOM", "width : " + image.width + ", height : " + image.height)
+                        Log.d("CUSTOM/MainActivity", "width : " + image.width + ", height : " + image.height)
                     }
                     needUpdateGraphicOverlayImageSourceInfo = false
                 }

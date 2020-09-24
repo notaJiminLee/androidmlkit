@@ -179,7 +179,7 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
       // When the image is from CameraX analysis use case, must call image.close() on received
       // images when finished using them. Otherwise, new images may not be received or the camera
       // may stall.
-      .addOnCompleteListener { image.close() }
+      .addOnSuccessListener { image.close() }
   }
 
   // -----------------Common processing logic-------------------------------------------------------
