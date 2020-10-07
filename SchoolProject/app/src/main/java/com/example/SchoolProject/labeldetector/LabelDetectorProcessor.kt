@@ -3,6 +3,7 @@ package com.example.SchoolProject.labeldetector
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import androidx.camera.core.ImageCapture
@@ -19,6 +20,12 @@ import com.google.mlkit.vision.label.ImageLabeler
 import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
+import java.nio.ByteBuffer
+import java.util.*
 
 class LabelDetectorProcessor(context: Context) : VisionProcessorBase<List<ImageLabel>>(context){
 
@@ -26,7 +33,7 @@ class LabelDetectorProcessor(context: Context) : VisionProcessorBase<List<ImageL
     val options = ImageLabelerOptions.DEFAULT_OPTIONS
     private val imageLabeler: ImageLabeler = ImageLabeling.getClient(options)
 
-    override fun detectInImage(image: InputImage): Task<List<ImageLabel>> {
+    override fun detectInImage(image: InputImage, bitmap: Bitmap): Task<List<ImageLabel>> {
         return imageLabeler.process(image)
             .addOnSuccessListener { labels ->
                 labels.sortBy {
@@ -44,13 +51,29 @@ class LabelDetectorProcessor(context: Context) : VisionProcessorBase<List<ImageL
                 val labeldb : LabelDB = LabelDB(context)
                 var sameflag = labeldb.existSame(text)
 
-                if(sameflag == false) {
-                    // 값 넣기
-                    var entry = LabelDB.Entry(
-                        label = "${text}"
-                    )
-                    labeldb.addEntry(entry)
-                }
+                // bitmap 저장
+//                val file = File(Environment.getStorageDirectory().toString() + "/" + "hi" + ".png")
+//                val outstream : OutputStream = FileOutputStream(file)
+//                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outstream)
+//                outstream.flush()
+//                outstream.close()
+//                Log.d("CUSTOM/LDP", "outputstream is : " + outstream.toString())
+
+                val stream = ByteArrayOutputStream()
+                bitmap?.compress(Bitmap.CompressFormat.PNG, 90, stream)
+                var data = stream.toByteArray()
+                //var arraydata = Arrays.toString(data)
+                var arraydata = "1234"
+                Log.d("CUSTOM_BYTE/LabelDetect", "byte : " + Arrays.toString(data))
+
+                // 값 넣기
+                var entry = LabelDB.Entry(
+                    label = "${text}",
+                    bytearray = "${arraydata}"
+                )
+                labeldb.addEntry(entry)
+
+
             }
     }
 
@@ -87,6 +110,9 @@ class LabelDetectorProcessor(context: Context) : VisionProcessorBase<List<ImageL
             val maina : MainActivity = context as MainActivity
             bitmap = context.viewFinder.bitmap
         }
+
+
+        Log.d("CUSTOM_CAM/LabDetectorP", "bitmap : " )
         requestDetectInImage(
             InputImage.fromMediaImage(image.image!!, image.imageInfo.rotationDegrees),
             graphicOverlay, /* originalCameraImage= */

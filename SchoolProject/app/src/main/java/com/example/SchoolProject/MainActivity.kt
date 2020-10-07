@@ -20,6 +20,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.amitshekhar.DebugDB
 import com.example.SchoolProject.db.BaseDB
 import com.example.SchoolProject.db.LabelDB
 import com.example.SchoolProject.labeldetector.LabelDetectorProcessor
@@ -48,6 +49,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        DebugDB.getAddressLog()
 
         // 제일 처음 앱 실행할 때 카메라 권한이 있는지 확인하고, 없으면 권한 요청
         if (allPermissionsGranted()) {
@@ -78,9 +80,9 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         var result = labeldb.getAll()
         Log.d("CUSTOM_DB/MainActivity", "Database Read Result : " + result)
 
-        var intent = Intent(this, GalleryActivity::class.java)
+        var intent = Intent(this, ListActivity::class.java)
         startActivity(intent)
-        finish()
+        //finish()
 
         // 값 넣기
 //        var entry = LabelDB.Entry(

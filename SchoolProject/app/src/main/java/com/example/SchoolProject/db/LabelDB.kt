@@ -3,6 +3,7 @@ package com.example.SchoolProject.db
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.database.CursorWindow
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import org.json.JSONException
@@ -12,11 +13,12 @@ import java.util.*
 class LabelDB(context: Context) : BaseDB(context) {
     private val TAG : String = LabelDB::class.java.simpleName
 
-    data class Entry(val label: String)
+    data class Entry(val label: String, val bytearray: String)
 
     companion object{
         const val LABEL = "label"
         const val PK = "pk"
+        const val BYTEARRAY = "bytearray"
     }
 
     /**
@@ -28,10 +30,14 @@ class LabelDB(context: Context) : BaseDB(context) {
         Log.d("CUSTOM_DB/LabelDB", "Database Read Start")
         val result = ArrayList<Entry>()
 
+        val field = CursorWindow::class.java.getDeclaredField("sCursorWindowSize")
+        field.setAccessible(true)
+        field.set(null, 50 * 1024 * 1024); //the 100MB is the new size
+
         try {
             this.readableDatabase
 
-            val cursor = db.query(LABEL_TABLE, arrayOf(LABEL, PK), null, null, null, null, null)
+            val cursor = db.query(LABEL_TABLE, arrayOf(LABEL, BYTEARRAY), null, null, null, null, null)
 
             if (cursor.count > 0) {
                 cursor.moveToFirst()
@@ -39,10 +45,11 @@ class LabelDB(context: Context) : BaseDB(context) {
                 while (!cursor.isAfterLast) {
                     result.add(
                         Entry(
-                            label = cursor.getString(0)
+                            label = cursor.getString(0),
+                            bytearray = cursor.getString(1)
                         )
                     )
-                    Log.d("CUSTOM_DB", "" + LabelDB::class.java + ", " + cursor.getString(0))
+                    //Log.d("CUSTOM_DB", "" + LabelDB::class.java + ", " + cursor.getString(0))
                     cursor.moveToNext()
                 }
             }
@@ -108,9 +115,13 @@ class LabelDB(context: Context) : BaseDB(context) {
         Log.d("CUSTOM_DB/LabelDB", "Database Entry Add Start")
         try {
             this.writableDatabase
+            val field = CursorWindow::class.java.getDeclaredField("sCursorWindowSize")
+            field.setAccessible(true)
+            field.set(null, 50 * 1024 * 1024); //the 100MB is the new size
 
             val values = ContentValues()
             values.put(LABEL, entry.label)
+            values.put(BYTEARRAY, entry.bytearray)
 
             db.insertWithOnConflict(LABEL_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE)
             Log.d("CUSTOM_DB/LabelDB", "Database Entry Add Complete")
@@ -127,7 +138,8 @@ class LabelDB(context: Context) : BaseDB(context) {
             cursor.moveToFirst()
 
             val entry = Entry(
-                label = cursor.getString(0)
+                label = cursor.getString(0),
+                bytearray = cursor.getString(1)
             )
 
             cursor.close()

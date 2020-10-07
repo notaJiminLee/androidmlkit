@@ -190,7 +190,7 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
     shouldShowFps: Boolean
   ): Task<T> {
     val startMs = SystemClock.elapsedRealtime()
-    return detectInImage(image).addOnSuccessListener(executor) { results: T ->
+    return detectInImage(image, originalCameraImage!!).addOnSuccessListener(executor) { results: T ->
       val currentLatencyMs = SystemClock.elapsedRealtime() - startMs
       numRuns++
       frameProcessedInOneSecondInterval++
@@ -251,7 +251,7 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
     fpsTimer.cancel()
   }
 
-  protected abstract fun detectInImage(image: InputImage): Task<T>
+  protected abstract fun detectInImage(image: InputImage, bitmap: Bitmap): Task<T>
 
   protected abstract fun onSuccess(results: T, graphicOverlay: GraphicOverlay)
 

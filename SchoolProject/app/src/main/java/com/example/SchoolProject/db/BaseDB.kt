@@ -11,7 +11,7 @@ open class BaseDB(context: Context): SQLiteOpenHelper(context, NAME,null, VERSIO
     private val TAG = "BaseDB"
 
     companion object{
-        const val NAME = "testdb"
+        const val NAME = "testdb.db"
         const val VERSION = 2
         /**
          * table names
@@ -38,7 +38,8 @@ open class BaseDB(context: Context): SQLiteOpenHelper(context, NAME,null, VERSIO
         try {
             db.execSQL("CREATE TABLE IF NOT EXISTS $LABEL_TABLE"
                     + " (${LabelDB.PK} TEXT PRIMARY KEY,"
-                    + " ${LabelDB.LABEL} TEXT)")
+                    + " ${LabelDB.LABEL} TEXT,"
+                    + " ${LabelDB.BYTEARRAY} TEXT);")
             Log.d("CUSTOM/BaseDB", "table created")
         }catch (e: Exception){
             Log.e("CUSTOM/BaseDB", "createDB Error : " + e)
