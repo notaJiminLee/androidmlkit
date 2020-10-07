@@ -52,24 +52,25 @@ class LabelDetectorProcessor(context: Context) : VisionProcessorBase<List<ImageL
                 var sameflag = labeldb.existSame(text)
 
                 // bitmap 저장
-//                val file = File(Environment.getStorageDirectory().toString() + "/" + "hi" + ".png")
-//                val outstream : OutputStream = FileOutputStream(file)
-//                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outstream)
-//                outstream.flush()
-//                outstream.close()
-//                Log.d("CUSTOM/LDP", "outputstream is : " + outstream.toString())
+                val file = File(context.getExternalFilesDir(null).toString() + "/" + "hi" + ".png")
+                Log.d("CUSTOM/LDP", "ExternalFilesDir : " + file.toString())
+                val outstream : OutputStream = FileOutputStream(file)
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outstream)
+                outstream.flush()
+                outstream.close()
+                Log.d("CUSTOM/LDP", "outputstream is : " + outstream.toString())
 
-                val stream = ByteArrayOutputStream()
-                bitmap?.compress(Bitmap.CompressFormat.PNG, 90, stream)
-                var data = stream.toByteArray()
-                //var arraydata = Arrays.toString(data)
-                var arraydata = "1234"
-                Log.d("CUSTOM_BYTE/LabelDetect", "byte : " + Arrays.toString(data))
+//                val stream = ByteArrayOutputStream()
+//                bitmap?.compress(Bitmap.CompressFormat.PNG, 90, stream)
+//                var data = stream.toByteArray()
+//                //var arraydata = Arrays.toString(data)
+//                var arraydata = "1234"
+//                Log.d("CUSTOM_BYTE/LabelDetect", "byte : " + Arrays.toString(data))
 
                 // 값 넣기
                 var entry = LabelDB.Entry(
                     label = "${text}",
-                    bytearray = "${arraydata}"
+                    bytearray = "${file.toString()}"
                 )
                 labeldb.addEntry(entry)
 

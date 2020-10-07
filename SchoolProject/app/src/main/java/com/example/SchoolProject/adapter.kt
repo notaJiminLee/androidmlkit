@@ -31,12 +31,12 @@ class adapter(val context: Context) : BaseAdapter() {
         for(i in result){
             var sameflag = false
             Log.d("CUSTOM_DB/adapter","result : " + i.label + ", bytearray : " + i.bytearray)
-//            for(j in this){
-//                if(i.label == j.name) {
-//                    sameflag = true
-//                    break
-//                }
-//            }
+            for(j in this){
+                if(i.label == j.name) {
+                    sameflag = true
+                    break
+                }
+            }
             if(sameflag == false){
                 this.add(test("${i.label}"))
             }
